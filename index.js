@@ -86,6 +86,9 @@ AIThinker.prototype.configureAccessory = function(accessory) {
     .getCharacteristic(Characteristic.On)
     .on('set', function(value, callback) {
       platform.log(accessory.displayName, "Light -> " + value);
+
+
+
       callback();
     });
   }
