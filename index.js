@@ -12,6 +12,9 @@ module.exports = function(homebridge) {
 }
 
 function JesperAccessory(log, config) {
+
+	var that = this;
+
   this.hpi = new HAL();
   this.log = log;
   this.config = config;
@@ -19,26 +22,29 @@ function JesperAccessory(log, config) {
   this.address = config["gpio"];
   this.ip = config["ip_address"];
 
+  log("Registering device with address: "+this.address);
+
   if (this.name == "ADC") {
     this.service = new Service.TemperatureSensor(this.name);
     this.service
     .getCharacteristic(Characteristic.CurrentTemperature)
-    .on('get', this.getOn.bind(this))
+    .on('get', function(callback) { that.getOn.bind(that); })
     ;
 
   } else {  
     this.service = new Service.Lightbulb(this.name);
     this.service
     .getCharacteristic(Characteristic.On)
-    .on('get', this.getOn.bind(this))
-    .on('set', this.setOn.bind(this));
+    .on('get', function(callback) { this.log("get"); that.getOn.bind(that); } )
+    .on('set', function(value, callback) { this.log("set"); that.setOn.bind(that); } )
+    ;
   }
 }
 
 JesperAccessory.prototype.getOn = function(callback) {    
   this.hpi.getFixtureState(this.address, function (status) {
     var fixtureStatus = (status.value == 1) ? 1 : 0;
-    console.log("getFixtureState: "+fixtureStatus);  
+    this.log("getFixtureState: "+fixtureStatus);  
     callback(null, fixtureStatus); 
   });  
 }
@@ -47,13 +53,17 @@ JesperAccessory.prototype.setOn = function(on, callback) {
   var fixtureState = on ? 1 : 0;
   this.hpi.setFixtureState(this.address, fixtureState, function (status) {
     var fixtureStatus = (status.success == true) ? 1 : 0;  
-    console.log("setFixtureState: "+fixtureStatus);  
+    this.log("setFixtureState: "+fixtureStatus);  
     callback(null, fixtureStatus);  
   });  
 }
 
 JesperAccessory.prototype.getServices = function() {
   return [this.service];
+}
+
+JesperAccessory.prototype.identify = function(callback) { 
+    callback();
 }
 
 /// HANDLERS
