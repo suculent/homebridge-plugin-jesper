@@ -1,9 +1,9 @@
 -- HTTP JSON Command Interpreter (one-line JSON, no pretties, should allow batches)
 function gpio_eval(payload)
 
-    var GREEN = 6;
-    var RED = 8;
-    var BLUE = 7;
+    local GREEN = 6;
+    local RED = 8;
+    local BLUE = 7;
 
     local lines = split(payload, "\n")
     local result = ""
@@ -18,7 +18,7 @@ function gpio_eval(payload)
                 print("Decode write command:")
                 local port = (writeCommand["gpio"])
                 local value = (writeCommand["state"])                
-                result += gpio_write(tonumber(port),tonumber(value))
+                result = result .. gpio_write(tonumber(port),tonumber(value))
             end
 
             -- RGB write
@@ -31,7 +31,7 @@ function gpio_eval(payload)
                 gpio.write(RED, tonumber(red))
                 gpio.write(GREEN, tonumber(green))
                 gpio.write(BLUE, tonumber(blue))
-                result += '{"success":true}'
+                result = result ..  '{"success":true}'
             end
 
             -- RGB read
@@ -41,7 +41,7 @@ function gpio_eval(payload)
                 local red = gpio.read(RED);
                 local green = gpio.read(GREEN);
                 local blue = gpio.blue(BLUE);
-                result += '{"led-status":{"red":' .. red .. ', "green":' .. green .. ', "blue":' .. blue .. '}}'
+                result = result ..  '{"led-status":{"red":' .. red .. ', "green":' .. green .. ', "blue":' .. blue .. '}}'
             end
 
             -- GPIO read
@@ -49,7 +49,7 @@ function gpio_eval(payload)
             if readCommand then
                 print("Decode read command:")
                 local port = (readCommand["gpio"])
-                result += gpio_read(port)
+                result = result ..  gpio_read(port)
             end
             
             -- connect to different SSID
@@ -64,7 +64,7 @@ function gpio_eval(payload)
                 file.writeline("wifi_ssid = " .. ssid)
                 file.writeline("wifi_password = " .. password)
 
-                result += '{"success":true}'                
+                result = result ..  '{"success":true}'                
                 connect(ssid, password)
             end
         end 
