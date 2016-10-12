@@ -1,23 +1,40 @@
 # Jesper
 
-ESP8266 HomeKit integration as a Homebridge plugin.
+Sample HomeKit integration as a Homebridge plugin. Contains JesperServer written in LUA for ESP8266 running a NodeMCU firmware. Implements simple JSON-based HTTP protocol to control GPIO and fixtures connected to the ESP board.
 
-Prerequisites:
+### Prerequisites
 
 - Homebridge installation on local WiFi
 - ESP8266 with FTDI/USB serial interface
 - ESPlorer or any other tool capable of injecting LUA file to ESP8266
 - node.js and npm installed
 
-Files:
-
+### Files
+```
 ESP8266/init.lua    - Jesper ESP: server code for the ESP board (inject with e.g. ESPlorer)
 http-commands.js    - testing JavaScript code with method calls against the Jesper ESP (run with `node http-commands.js`)
 package.json        - npm package descriptor
 index.js            - main plugin module code
+```
+
+### Installation
+
+Open the plugin folder in terminal and run 'npm install -g' to let Homebridge access the plugin. It should respond with:
+
+    /usr/local/lib
+    └── homebridge-thinker@0.0.1 
+    
+### Usage
+
+__TODO__
+
+### Future features
+
+* Use MQTT (and/or UDP) to broadcast new IP address.
+* Use MQTT (and/or socket) to listen for changes.
 
 
-Jesper protocol:
+### The Jesper protocol
 
 Jesper ESP is a HTTP-based JSON protocol GPIO server. At the current moment,
 supports only minimized JSONs (not pretty-printed).
@@ -26,55 +43,69 @@ Encodes values to GPIO PINs as gpio.LOW for 1 and gpio.HIGH for 0 (todo: fact-ch
 Values read from ADC are in range 0 .. 1024 (todo: fact-check)
 System reboots after any critical failure.
 
-Jesper currently defines following commands:
+## Connect to WiFi [connect]
 
-### Connect
+Requires existing connection. If you need to connect to specific WiFi network on ESP reset, this will save arguments inside a file named config.lua on your ESP for future use after reset.
 
-__Connect to different WiFi__
+The file should contain following globals:
 
-Requires existing connection. If you need to connect to specific WiFi network on ESP reset, edit arguments on the `connect()` line at the end of init.lua.
+    wifi_ssid = 'ENTER_YOUR_WIFI_SSID'
+    wifi_password = 'ENTER_YOUR_WIFI_PASSWORD'
+    
+Usage:
 
-TODO: Extract configuration to separate file, enable persistence.
-TODO: Use MQTT (UDP?) to broadcast new IP address.
-
-**Example**
-
-{"connect":{"ssid":"mywifi","password":"password"}}
+**HTTP POST** `{"connect":{"ssid":"mywifi","password":"password"}}`
 
 
-### Write
-
-__Write value to GPIO.__
+## Write to GPIO [write]
 
 GPIO ports are numbered 0-n, ADC is read-only (write not supported).
 
-**Example**
+**HTTP POST**
 
-REQUEST
 `{"write":{"port":4,"value":1}}`
 
-RESPONSE
+**RESPONSE**
+
 `{"success":true}`
 
 
-### Read
+## Read from GPIO/ADC [read]
 
 __Read value from GPIO or ADC.__
 
 GPIO ports are numbered 0-n, ADC uses reserved value of 255.
 
-**Example**
+**HTTP POST**
 
-REQUEST
 `{"read":{"port":1}}`
 
-RESPONSE
+**RESPONSE**
+
 `{"port":1, "value":1}`
 
 
-### LED
+## Write to LED [led]
 
 __Write RGB triplet to LED (GPIO PINs 7, 8, 9).__
 
-REQUEST
+**HTTP POST**
+
 `{"led":{"red":1,"green":1,"blue":1}}`
+
+**RESPONSE**
+
+`{"success":true}`
+
+
+## Read from LED [led-status]
+
+Reads RGB triplet from LED (GPIO PINs 7, 8, 9).
+
+**HTTP POST**
+
+`{"led-status":"please"}`
+
+**RESPONSE**
+
+`{"led-status":{"red":1, "green":1, "blue":1}}`

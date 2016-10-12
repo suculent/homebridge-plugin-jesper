@@ -1,7 +1,12 @@
 -- HTTP JSON Command Interpreter (one-line JSON, no pretties, should allow batches)
 function gpio_eval(payload)
+
+    var GREEN = 6;
+    var RED = 8;
+    var BLUE = 7;
+
     local lines = split(payload, "\n")
-    local result = nil
+    local result = ""
     for k, line in pairs(lines) do
         if line == nil then break end
         if string.find(line, '{"') then
@@ -13,7 +18,7 @@ function gpio_eval(payload)
                 print("Decode write command:")
                 local port = (writeCommand["gpio"])
                 local value = (writeCommand["state"])                
-                result = gpio_write(tonumber(port),tonumber(value))
+                result += gpio_write(tonumber(port),tonumber(value))
             end
 
             -- RGB write
@@ -22,11 +27,21 @@ function gpio_eval(payload)
                 print("Decode led command:")
                 local red = (ledCommand["red"])
                 local green = (ledCommand["green"])
-                local blue = (ledCommand["blue"])                
-                gpio.write(6, tonumber(green))
-                gpio.write(8, tonumber(red))
-                gpio.write(7, tonumber(blue))
-                result = '{"success":true}'
+                local blue = (ledCommand["blue"])                                
+                gpio.write(RED, tonumber(red))
+                gpio.write(GREEN, tonumber(green))
+                gpio.write(BLUE, tonumber(blue))
+                result += '{"success":true}'
+            end
+
+            -- RGB read
+            local rgbCommand = (command["led-status"])    
+            if rgbCommand then
+                print("Decode led command:")
+                local red = gpio.read(RED);
+                local green = gpio.read(GREEN);
+                local blue = gpio.blue(BLUE);
+                result += '{"led-status":{"red":' .. red .. ', "green":' .. green .. ', "blue":' .. blue .. '}}'
             end
 
             -- GPIO read
@@ -34,7 +49,7 @@ function gpio_eval(payload)
             if readCommand then
                 print("Decode read command:")
                 local port = (readCommand["gpio"])
-                result = gpio_read(port)
+                result += gpio_read(port)
             end
             
             -- connect to different SSID
@@ -49,7 +64,7 @@ function gpio_eval(payload)
                 file.writeline("wifi_ssid = " .. ssid)
                 file.writeline("wifi_password = " .. password)
 
-                result = '{"success":true}'                
+                result += '{"success":true}'                
                 connect(ssid, password)
             end
         end 
