@@ -1,3 +1,62 @@
+-- HTTP JSON Command Interpreter (one-line JSON, no pretties, should allow batches)
+function gpio_eval(payload)
+    local lines = split(payload, "\n")
+    local result = nil
+    for k, line in pairs(lines) do
+        if line == nil then break end
+        if string.find(line, '{"') then
+            local command = cjson.decode(line)   
+            
+            -- GPIO write
+            local writeCommand = (command["write"])    
+            if writeCommand then
+                print("Decode write command:")
+                local port = (writeCommand["gpio"])
+                local value = (writeCommand["state"])                
+                result = gpio_write(tonumber(port),tonumber(value))
+            end
+
+            -- RGB write
+            local ledCommand = (command["led"])    
+            if ledCommand then
+                print("Decode led command:")
+                local red = (ledCommand["red"])
+                local green = (ledCommand["green"])
+                local blue = (ledCommand["blue"])                
+                gpio.write(6, tonumber(green))
+                gpio.write(8, tonumber(red))
+                gpio.write(7, tonumber(blue))
+                result = '{"success":true}'
+            end
+
+            -- GPIO read
+            local readCommand = (command["read"])
+            if readCommand then
+                print("Decode read command:")
+                local port = (readCommand["gpio"])
+                result = gpio_read(port)
+            end
+            
+            -- connect to different SSID
+            local connectCommand = (command["connect"])    
+            if connectCommand then
+                print("Decode connectcommand:")
+                local ssid = (ledCommand["ssid"])
+                local password = (ledCommand["password"])
+
+                -- update config
+                file.open("config.lua","w+")
+                file.writeline("wifi_ssid = " .. ssid)
+                file.writeline("wifi_password = " .. password)
+
+                result = '{"success":true}'                
+                connect(ssid, password)
+            end
+        end 
+    end
+    return result
+end
+
 -- HAL - hardware abstraction layer
 function gpio_write(port, value)  
     --print("gpio_write:" .. port .. ":" .. value)
@@ -28,18 +87,18 @@ function gpio_read(port)
         print("ADC Selected.")
         value = adc.read(0)
     else
+    -- gpio.mode(port,gpio.INPUT)
         value = gpio.read(port)    
     end
-    -- gpio.mode(port,gpio.INPUT)
     print("gpio_read: Read " .. value .. " from port " .. port)      
-    return '{"port"'+port+',"value"'+value'}';
+    return '{"port": ' .. port .. ',"value": ' .. value .. '}';
 end
 
 function gpio_status(port)
     -- gpio.mode(port,gpio.OUTPUT))
     local value = gpio.read(port)
     print("gpio_read: Read status " .. value .. " from port " .. port)      
-    return '{"port"'+port+',"value"'+value'}';
+    return '{"port": '+port+',"value": '+value'}';
 end
 
 -- Tools
@@ -49,50 +108,6 @@ function split(str, delim)
         table.insert(result, part); lastPos = pos
     end
     table.insert(result, string.sub(str, lastPos))
-    return result
-end
-
--- Main
-function gpio_eval(payload)
-    -- requires one-line JSON, no pretties...
-    local lines = split(payload, "\n")
-    local result = nil
-    for k, line in pairs(lines) do
-        if line == nil then break end
-        if string.find(line, '{"') then
-            local command = cjson.decode(line)   
-            -- write first so the consequent batch read would return valid values
-            local writeCommand = (command["write"])    
-            if writeCommand then
-                print("Decode write command:")
-                local port = (writeCommand["gpio"])
-                local value = (writeCommand["state"])                
-                result = gpio_write(tonumber(port),tonumber(value))
-            end
-
-             local ledCommand = (command["led"])    
-            if ledCommand then
-                print("Decode led command:")
-                local red = (ledCommand["red"])
-                local green = (ledCommand["green"])
-                local blue = (ledCommand["blue"])                
-                gpio.write(6, tonumber(green))
-                gpio.write(8, tonumber(red))
-                gpio.write(7, tonumber(blue))
-                result = '{"led":true}'
-            end
-
-            local readCommand = (command["read"])
-            if readCommand then
-                print("Decode read command:")
-                local port = (readCommand["gpio"])
-                print("Reading port " .. port)
-                print("--" .. port)
-                value = gpio_read(port)
-                result = '{"port":' .. port .. ', "value":' .. value .. '}'
-            end
-        end 
-    end
     return result
 end
 
@@ -119,13 +134,21 @@ function server()
             local result = gpio_eval(payload)
             local text = tostring(result)
             print('end-result: ' .. text)
-            client:send(text)
-            client:close()
-            print('connection closed.\n\n')
+            local response = 'HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n' .. text .. '\n'
+            print('response: ' .. response)
+            client:send(response)            
             end)
         end)
+
+        conn:on("sent", function(sck) 
+            sck:close() 
+            print('connection closed.\n\n')
+        end)
+        
     return server
 end
 
-connect("<SSID>","<PASSWORD>")
+-- import configuration
+dofile("config.lua")
+connect(wifi_ssid, wifi_password)
 Server = server()
