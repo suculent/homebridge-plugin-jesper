@@ -15,29 +15,29 @@ function gpio_eval(payload)
             -- GPIO write
             local writeCommand = (command["write"])    
             if writeCommand then
-                print("Decode write command:")
                 local port = (writeCommand["gpio"])
                 local value = (writeCommand["state"])                
                 result = result .. gpio_write(tonumber(port),tonumber(value))
             end
 
             -- RGB write
-            local ledCommand = (command["led"])    
+        
             if ledCommand then
-                print("Decode led command:")
-                local red = (ledCommand["red"])
-                local green = (ledCommand["green"])
-                local blue = (ledCommand["blue"])                                
-                gpio.write(RED, tonumber(red))
-                gpio.write(GREEN, tonumber(green))
-                gpio.write(BLUE, tonumber(blue))
-                result = result ..  '{"success":true}'
+                local red = tonumber(ledCommand["red"])
+                local green = tonumber(ledCommand["green"])
+                local blue = tonumber(ledCommand["blue"])                                
+                gpio.write(RED, (red))
+                gpio.write(GREEN, green)
+                gpio.write(BLUE, blue)                
+                red = gpio.read(RED);
+                green = gpio.read(GREEN);
+                blue = gpio.blue(BLUE);
+                result = result ..  '{"led-status":{"red":' .. red .. ', "green":' .. green .. ', "blue":' .. blue .. '}}'
             end
 
             -- RGB read
             local rgbCommand = (command["led-status"])    
             if rgbCommand then
-                print("Decode led command:")
                 local red = gpio.read(RED);
                 local green = gpio.read(GREEN);
                 local blue = gpio.blue(BLUE);
@@ -47,7 +47,6 @@ function gpio_eval(payload)
             -- GPIO read
             local readCommand = (command["read"])
             if readCommand then
-                print("Decode read command:")
                 local port = (readCommand["gpio"])
                 result = result ..  gpio_read(port)
             end
@@ -55,7 +54,6 @@ function gpio_eval(payload)
             -- connect to different SSID
             local connectCommand = (command["connect"])    
             if connectCommand then
-                print("Decode connectcommand:")
                 local ssid = (ledCommand["ssid"])
                 local password = (ledCommand["password"])
 
@@ -80,17 +78,11 @@ function gpio_write(port, value)
     if value == 1 then out = gpio.LOW end
     if value == 0 then out = gpio.HIGH end
 
-    print("gpio_write:2")
     if port == 255 then
         print("gpio_write: Writing to ADC is not possible. No operation.")
     else
-        print("gpio_write:3")
         gpio.mode(port,gpio.OUTPUT)
-        print("gpio_write:4")
-        --print("gpio_write: Writing " .. value .. " to port " .. port)
-        print("gpio_write:do")
         gpio.write(tonumber(port), out)
-        print("gpio_write:complete")
         result = '{"success":true}'
     end
     return result
