@@ -127,5 +127,5 @@ function server()
     return server
 end
 
-connect("page42.showflake.czf","quarantine")
+connect("<SSID>","<PASSWORD>")
 Server = server()
