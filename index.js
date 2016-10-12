@@ -2,14 +2,13 @@
 
 var HAL = require("./jesper-api.js");
 
-var testing = true;
-var request = require("request");
+var testing = false;
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-led", "Jesper-LED", JesperAccessory);
+  homebridge.registerAccessory("homebridge-jesper", "Jesper-LED", JesperAccessory);
 }
 
 function JesperAccessory(log, config) {
@@ -17,29 +16,40 @@ function JesperAccessory(log, config) {
   this.log = log;
   this.config = config;
   this.name = config["name"];
-  this.address = 4;
-  
-  this.service
-  .getCharacteristic(Characteristic.On)
-  .on('get', this.getOn.bind(this))
-  .on('set', this.setOn.bind(this));
+  this.address = config["gpio"];
+  this.ip = config["ip_address"];
+
+  if (this.name == "ADC") {
+    this.service = new Service.TemperatureSensor(this.name);
+    this.service
+    .getCharacteristic(Characteristic.CurrentTemperature)
+    .on('get', this.getOn.bind(this))
+    ;
+
+  } else {  
+    this.service = new Service.Lightbulb(this.name);
+    this.service
+    .getCharacteristic(Characteristic.On)
+    .on('get', this.getOn.bind(this))
+    .on('set', this.setOn.bind(this));
+  }
 }
 
 JesperAccessory.prototype.getOn = function(callback) {    
-  this.hal.getFixtureState(address, function (status) {
-    console.log("getFixtureState response:"+status.toString());
-    if (callback) {
-      callback(null, status);
-    }
+  this.hpi.getFixtureState(this.address, function (status) {
+    var fixtureStatus = (status.value == 1) ? 1 : 0;
+    console.log("getFixtureState: "+fixtureStatus);  
+    callback(null, fixtureStatus); 
   });  
 }
 
 JesperAccessory.prototype.setOn = function(on, callback) {
   var fixtureState = on ? 1 : 0;
-  this.hal.setFixtureState(address, fixtureState);
-  if (callback) {
-    callback(null, on);
-  }
+  this.hpi.setFixtureState(this.address, fixtureState, function (status) {
+    var fixtureStatus = (status.success == true) ? 1 : 0;  
+    console.log("setFixtureState: "+fixtureStatus);  
+    callback(null, fixtureStatus);  
+  });  
 }
 
 JesperAccessory.prototype.getServices = function() {

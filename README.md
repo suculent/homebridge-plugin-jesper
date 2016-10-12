@@ -23,10 +23,72 @@ Open the plugin folder in terminal and run 'npm install -g' to let Homebridge ac
 
     /usr/local/lib
     └── homebridge-thinker@0.0.1 
+
+Edit ~/.homebridge/config.json:
+    
+    {
+      "bridge" : {
+        "name" : "Homebridge",
+        "username" : "CC:22:3D:E3:CE:31",
+        "port" : 51826,
+        "pin" : "031-45-155"
+      },
+      "accessories" : [
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "ADC",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 255
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "GPIO 5",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 5
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "ESP8266",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 4
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "GPIO 3",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 3
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "GPIO 2",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 2
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "GPIO 1",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 1
+        },
+        {
+          "accessory" : "Jesper-LED",
+          "name" : "GPIO 0",
+          "description" : "ESP8266 Microcontroller",
+          "ip_address" : "192.168.1.8",
+          "gpio" : 0
+        }
+      ]
+    }
     
 ### Usage
 
-__TODO__
+
 
 ### Future features
 
