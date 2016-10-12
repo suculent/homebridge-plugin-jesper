@@ -27,14 +27,17 @@ function JesperAccessory(log, config) {
 
 JesperAccessory.prototype.getOn = function(callback) {    
   var status = this.hal.getFixtureState(address);
-  callback(null, status);
+  if (callback) {
+    callback(null, status);
+  }
 }
 
 JesperAccessory.prototype.setOn = function(on, callback) {
     var fixtureState = on ? 1 : 0;
     this.hal.setFixtureState(address, fixtureState);
-
-    callback(null, on);
+    if (callback) {
+      callback(null, on);
+    }
 }
 
 JesperAccessory.prototype.getServices = function() {
@@ -54,24 +57,25 @@ if (testing) {
   var hpi = new HAL(); 
 
   setTimeout(function() {
-      console.log('testing: getFixtureState(4, 0)');
-      hpi.getFixtureState(9);
+      console.log('testing: getFixtureState(4)');
+      hpi.getFixtureState(9, function (state) {
+        console.log(state);
+      });
   }, 0);
 
   setTimeout(function() {
       console.log('testing: setFixtureState(4, 1)');
       hpi.setFixtureState(4, 1);
   }, 1000);
-
-  /*
-  setTimeout(function() {
-      console.log('testing: setFixtureRGB(0, 1, 0)');
-      hpi.setFixtureRGB(0, 1, 0);
-  }, 2000);
-
+  
   setTimeout(function() {
       console.log('testing: setFixtureRGB(1, 0, 0)');
       hpi.setFixtureRGB(1, 0, 0);
+  }, 2000);
+
+  setTimeout(function() {
+      console.log('testing: setFixtureRGB(0, 1, 0)');
+      hpi.setFixtureRGB(0, 1, 0);
   }, 4000);
 
   setTimeout(function() {
@@ -80,14 +84,15 @@ if (testing) {
   }, 6000);
 
   setTimeout(function() {
-      console.log('testing: setFixtureState(4, 0)');
-      hpi.setFixtureState(4, 0);
-  }, 0);
+      console.log('testing: setFixtureRGB(0, 0, 0)');
+      hpi.setFixtureRGB(0, 0, 0);
+  }, 8000);
 
   setTimeout(function() {
-      console.log('testing: getFixtureState(4, 0)');
-      hpi.getFixtureState(4);
+      console.log('testing: getFixtureState(4)');
+      hpi.getFixtureState(9, function (state) {
+        console.log(state);
+      });
   }, 10000);
 
-  */
 }

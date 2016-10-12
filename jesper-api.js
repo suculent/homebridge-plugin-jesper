@@ -27,27 +27,33 @@ class JesperAPI {
 
   setFixtureRGB(red, green, blue) {  
     var data = '{"led":{"red":'+red+',"green":'+green+',"blue":'+blue+'}}';  
-    this.POST(data);
+    this.POST(data, null);
   }
 
-  getFixtureState(identifier) {  
+  getFixtureState(identifier, callback) {  
     var data = '{"read":{"gpio":' + identifier + '}}';
-    this.POST(data);  
+    this.POST(data, callback);  
   }
 
-  POST(data) {
+  POST(data, callback) {
     console.log("HTTP POST:"+data);
     var req = http.request(this.options, function (res) {
            var response = ""
            res.on('data', function (body) {
                response += body;
                console.log("response-body:"+body);
+               if (callback != null) {
+                  callback(body)
+               }
            });
            res.on('error', function (err) {
                console.log("error:"+err);
            });
            res.on('end', function () {
-               return callback(response);
+            
+            if (callback != null) {
+                return callback(response)
+            } else return function(){};
            });
       });
     req.write(data);
