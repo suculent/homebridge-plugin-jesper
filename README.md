@@ -1,21 +1,12 @@
 # Jesper
 
-Sample HomeKit integration as a Homebridge plugin. Contains JesperServer written in LUA for ESP8266 running a NodeMCU firmware. Implements simple JSON-based HTTP protocol to control GPIO and fixtures connected to the ESP board.
+Sample HomeKit integration as a Homebridge plugin. Requires [Jesper Server for ESP8266](https://github.com/suculent/esp8266-jesper) written in LUA for ESP8266 running a NodeMCU firmware. 
 
 ### Prerequisites
 
 - Homebridge installation on local WiFi
-- ESP8266 with FTDI/USB serial interface
-- ESPlorer or any other tool capable of injecting LUA file to ESP8266
+- ESP8266 on local WiFi with Jesper Server installed
 - node.js and npm installed
-
-### Files
-```
-ESP8266/init.lua    - Jesper ESP: server code for the ESP board (inject with e.g. ESPlorer)
-http-commands.js    - testing JavaScript code with method calls against the Jesper ESP (run with `node http-commands.js`)
-package.json        - npm package descriptor
-index.js            - main plugin module code
-```
 
 ### Installation
 
@@ -88,86 +79,11 @@ Edit ~/.homebridge/config.json:
     
 ### Usage
 
-
+Setup the homebridge's config with `ip_address` of your ESP8266 with [Jesper Server for ESP8266](https://github.com/suculent/esp8266-jesper) installed.
+Add the homebridge/accessory with your iOS HomeKit application.
 
 ### Future features
 
 * Use MQTT (and/or UDP) to broadcast new IP address.
 * Use MQTT (and/or socket) to listen for changes.
 
-
-### The Jesper protocol
-
-Jesper ESP is a HTTP-based JSON protocol GPIO server. At the current moment,
-supports only minimized JSONs (not pretty-printed).
-
-Encodes values to GPIO PINs as gpio.LOW for 1 and gpio.HIGH for 0 (todo: fact-check)
-Values read from ADC are in range 0 .. 1024 (todo: fact-check)
-System reboots after any critical failure.
-
-## Connect to WiFi [connect]
-
-Requires existing connection. If you need to connect to specific WiFi network on ESP reset, this will save arguments inside a file named config.lua on your ESP for future use after reset.
-
-The file should contain following globals:
-
-    wifi_ssid = 'ENTER_YOUR_WIFI_SSID'
-    wifi_password = 'ENTER_YOUR_WIFI_PASSWORD'
-    
-Usage:
-
-**HTTP POST** `{"connect":{"ssid":"mywifi","password":"password"}}`
-
-
-## Write to GPIO [write]
-
-GPIO ports are numbered 0-n, ADC is read-only (write not supported).
-
-**HTTP POST**
-
-`{"write":{"port":4,"value":1}}`
-
-**RESPONSE**
-
-`{"success":true}`
-
-
-## Read from GPIO/ADC [read]
-
-__Read value from GPIO or ADC.__
-
-GPIO ports are numbered 0-n, ADC uses reserved value of 255.
-
-**HTTP POST**
-
-`{"read":{"port":1}}`
-
-**RESPONSE**
-
-`{"port":1, "value":1}`
-
-
-## Write to LED [led]
-
-__Write RGB triplet to LED (GPIO PINs 7, 8, 9).__
-
-**HTTP POST**
-
-`{"led":{"red":1,"green":1,"blue":1}}`
-
-**RESPONSE**
-
-`{"success":true}`
-
-
-## Read from LED [led-status]
-
-Reads RGB triplet from LED (GPIO PINs 7, 8, 9).
-
-**HTTP POST**
-
-`{"led-status":"please"}`
-
-**RESPONSE**
-
-`{"led-status":{"red":1, "green":1, "blue":1}}`
