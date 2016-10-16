@@ -1,1 +1,65 @@
-{"bridge":{"name":"Homebridge","username":"CC:22:3D:E3:CE:32","port":51826,"pin":"031-45-155"},"accessories":[{"accessory":"Jesper","name":"ADC","description":"Sensor","ip_address":"192.168.1.8","gpio":255},{"accessory":"Jesper","name":"GPIO 5","description":"Switch","ip_address":"192.168.1.8","gpio":5},{"accessory":"Jesper","name":"GPIO 4","description":"Switch","ip_address":"192.168.1.8","gpio":4},{"accessory":"Jesper","name":"GPIO 3","description":"Switch","ip_address":"192.168.1.8","gpio":3},{"accessory":"Jesper","name":"GPIO 2","description":"Switch","ip_address":"192.168.1.8","gpio":2},{"accessory":"Jesper","name":"GPIO 1","description":"Switch","ip_address":"192.168.1.8","gpio":1},{"accessory":"Jesper","name":"GPIO 0","description":"Switch","ip_address":"192.168.1.8","gpio":0},{"accessory":"WeMo","name":"WeMo Switch","wemo_name":"WeMo Switch","description":"Lava Lamp"}]}
+{
+  "bridge" : {
+    "name" : "Homebridge",
+    "username" : "CC:22:3D:E3:CE:32",
+    "port" : 51826,
+    "pin" : "031-45-155"
+  },
+  "accessories" : [
+    {
+      "accessory" : "Jesper",
+      "name" : "ADC",
+      "description" : "Sensor",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 255
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 5",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 5
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 4",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 4
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 3",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 3
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 2",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 2
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 1",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 1
+    },
+    {
+      "accessory" : "Jesper",
+      "name" : "GPIO 0",
+      "description" : "Switch",
+      "ip_address" : "192.168.1.8",
+      "gpio" : 0
+    },
+    {
+      "accessory" : "WeMo",
+      "name" : "WeMo Switch",
+      "wemo_name" : "WeMo Switch",
+      "description" : "Lava Lamp"
+    }
+  ]
+}

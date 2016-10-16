@@ -1,1 +1,20 @@
-{"name":"homebridge-jesper","version":"0.0.12","description":"Experimental Platform plugin for custom ESP8266","license":"ISC","keywords":["homebridge-plugin"],"repository":{"type":"git","url":"https://github.com/suculent/homebridge-thinker.git"},"bugs":{"url":"http://github.com/suculent/homebridge-thinker/issues"},"engines":{"node":">=0.12.0","homebridge":">=0.2.0"}}
+{
+  "name" : "homebridge-jesper",
+  "version" : "0.0.12",
+  "description" : "Experimental Platform plugin for custom ESP8266",
+  "license" : "ISC",
+  "keywords" : [
+    "homebridge-plugin"
+  ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/suculent/homebridge-thinker.git"
+  },
+  "bugs" : {
+    "url" : "http://github.com/suculent/homebridge-thinker/issues"
+  },
+  "engines" : {
+    "node" : ">=0.12.0",
+    "homebridge" : ">=0.2.0"
+  }
+}
