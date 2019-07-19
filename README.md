@@ -1,5 +1,7 @@
 # Jesper
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/suculent/homebridge-plugin-jesper.svg)](https://greenkeeper.io/)
+
 Sample HomeKit integration as a Homebridge plugin. Requires [Jesper Server for ESP8266](https://github.com/suculent/esp8266-jesper) written in LUA for ESP8266 running a NodeMCU firmware. 
 
 ### Prerequisites
